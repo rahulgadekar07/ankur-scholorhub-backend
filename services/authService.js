@@ -41,7 +41,29 @@ const getUserByEmail = async (email) => {
   return result;
 };
 
+const getUserById = async (id) => {
+  const result = await query('SELECT * FROM users WHERE id = ?', [id]);
+  return result[0];
+};
+
+const updateUser = async (id, userData) => {
+  const fields = [];
+  const values = [];
+
+  for (const [key, value] of Object.entries(userData)) {
+    fields.push(`${key} = ?`);
+    values.push(value);
+  }
+
+  const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
+  values.push(id);
+
+  await query(sql, values);
+};
+
 module.exports = {
   signup,
-  getUserByEmail
+  getUserByEmail,
+  getUserById,
+  updateUser
 };
