@@ -1,5 +1,9 @@
-const db = require('../config/db.config');
-const util = require('util');
+// db.js
+const pool = require('../config/db.config');
 
-const query = util.promisify(db.query).bind(db);
+async function query(sql, params) {
+  const [rows] = await pool.query(sql, params);
+  return rows;
+}
+
 module.exports = { query };

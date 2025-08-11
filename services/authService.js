@@ -1,8 +1,5 @@
 // services/authService.js
 const db = require('../config/db.config');
-const util = require('util');
-
-const query = util.promisify(db.query).bind(db);
 
 const signup = async (userData) => {
   const {
@@ -33,17 +30,16 @@ const signup = async (userData) => {
     gender || null, bio || null, organization || null
   ];
 
-  await query(sql, values);
+  await db.query(sql, values);
 };
 
 const getUserByEmail = async (email) => {
-  const result = await query('SELECT * FROM users WHERE email = ?', [email]);
-  return result;
+  return await db.query('SELECT * FROM users WHERE email = ?', [email]);
 };
 
 const getUserById = async (id) => {
-  const result = await query('SELECT * FROM users WHERE id = ?', [id]);
-  return result[0];
+  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+  return rows[0];
 };
 
 const updateUser = async (id, userData) => {
@@ -58,7 +54,7 @@ const updateUser = async (id, userData) => {
   const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
   values.push(id);
 
-  await query(sql, values);
+  await db.query(sql, values);
 };
 
 module.exports = {
