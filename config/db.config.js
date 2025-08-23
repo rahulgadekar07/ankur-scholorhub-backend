@@ -1,4 +1,3 @@
-// config/db.config.js
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
@@ -10,9 +9,13 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  ssl: {
+    rejectUnauthorized: true   // ✅ add if your DB host requires SSL
+  }
 });
 
+// Test connection once on startup
 (async () => {
   try {
     const connection = await pool.getConnection();
@@ -22,5 +25,15 @@ const pool = mysql.createPool({
     console.error('❌ MySQL connection error:', err);
   }
 })();
+
+// 🔄 Keep-alive ping every 30 seconds
+setInterval(async () => {
+  try {
+    await pool.query("SELECT 1");
+    console.log("✅ MySQL keep-alive ping");
+  } catch (err) {
+    console.error("❌ Keep-alive ping failed:", err.message);
+  }
+}, 30000);
 
 module.exports = pool;

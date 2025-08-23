@@ -34,8 +34,16 @@ const signup = async (userData) => {
 };
 
 const getUserByEmail = async (email) => {
-  return await db.query('SELECT * FROM users WHERE email = ?', [email]);
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    console.log("Email query result:", rows);
+    return rows; // <-- return just the rows
+  } catch (error) {
+    console.error("Error in getUserByEmail:", error);
+    throw error;
+  }
 };
+
 
 const getUserById = async (id) => {
   const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);
