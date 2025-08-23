@@ -10,9 +10,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  ssl: {
-    rejectUnauthorized: true   // ✅ add if your DB host requires SSL
-  }
+ 
 });
 
 // Test connection once on startup
