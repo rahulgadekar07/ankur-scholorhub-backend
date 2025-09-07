@@ -1,5 +1,5 @@
 // services/authService.js
-const db = require('../config/db.config');
+const db = require("../config/db.config");
 
 const signup = async (userData) => {
   const {
@@ -13,7 +13,7 @@ const signup = async (userData) => {
     dob,
     gender,
     bio,
-    organization
+    organization,
   } = userData;
 
   const sql = `
@@ -25,29 +25,30 @@ const signup = async (userData) => {
   `;
 
   const values = [
-    full_name, email, password, role,
-    phone || null, profile_image || null, address || null, dob || null,
-    gender || null, bio || null, organization || null
+    full_name,
+    email,
+    password,
+    role,
+    phone || null,
+    profile_image || null,
+    address || null,
+    dob || null,
+    gender || null,
+    bio || null,
+    organization || null,
   ];
 
   await db.query(sql, values);
 };
 
 const getUserByEmail = async (email) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-    console.log("Email query result:", rows);
-    return rows; // <-- return just the rows
-  } catch (error) {
-    console.error("Error in getUserByEmail:", error);
-    throw error;
-  }
+  const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+  return rows;
 };
 
-
 const getUserById = async (id) => {
-  const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);
-  return rows[0];
+  const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
+  return rows.length > 0 ? rows[0] : null; // always return a single object or null
 };
 
 const updateUser = async (id, userData) => {
@@ -59,15 +60,21 @@ const updateUser = async (id, userData) => {
     values.push(value);
   }
 
-  const sql = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
+  const sql = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
   values.push(id);
 
   await db.query(sql, values);
+};
+
+const updateUserProfileImage = async (id, profileImagePath) => {
+  const sql = "UPDATE users SET profile_image = ? WHERE id = ?";
+  await db.query(sql, [profileImagePath, id]);
 };
 
 module.exports = {
   signup,
   getUserByEmail,
   getUserById,
-  updateUser
+  updateUser,
+  updateUserProfileImage,
 };

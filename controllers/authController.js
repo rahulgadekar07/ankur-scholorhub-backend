@@ -1,3 +1,4 @@
+//controllers/authController.js
 const authService = require("../services/authService");
 const emailService = require("../services/emailService");
 const bcrypt = require("bcryptjs");
@@ -114,9 +115,65 @@ const logout = (req, res) => {
   res.status(200).json({ message: "User logged out successfully" });
 };
 
+const updateProfileImage = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const existingUser = await authService.getUserById(userId);
+
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let oldImagePath = existingUser.profile_image;
+
+    // Delete old image if stored locally
+    if (oldImagePath && oldImagePath.startsWith("/uploads/")) {
+      const fullPath = path.join(
+        __dirname,
+        "..",
+        oldImagePath.replace(/^\//, "")
+      );
+      fs.unlink(fullPath, (err) => {
+        if (err) console.error("Error deleting old profile image:", err);
+      });
+    }
+
+    // Save new image path
+    const newImagePath = `/uploads/profile_images/${req.file.filename}`;
+    await authService.updateUserProfileImage(userId, newImagePath);
+
+    // Fetch full updated user object
+    const updatedUser = await authService.getUserById(userId);
+
+    res.status(200).json({
+      message: "Profile image updated successfully",
+      user: updatedUser, // ✅ send full user object
+    });
+  } catch (error) {
+    console.error("Update profile image error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+const getCurrentUser = async (req, res) => {
+  try {
+    const userId = req.user.userId; // 👈 comes from authMiddleware (decoded from token)
+    const user = await authService.getUserById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Get current user error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 module.exports = {
   signup,
   login,
   logout,
   updateUser,
+  updateProfileImage,
+  getCurrentUser,
 };
