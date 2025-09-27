@@ -11,7 +11,11 @@ app.use(express.json());
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require("./routes/adminRoutes");
+
 app.use('/api/auth', authRoutes);
+app.use("/api/admin", adminRoutes);
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Base URL route
