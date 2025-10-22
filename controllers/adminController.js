@@ -1,5 +1,8 @@
 // controllers/adminController.js
 const adminService = require("../services/adminService");
+const authService = require("../services/authService");
+
+const emailService = require("../services/emailService");
 
 // Get all users
 const getAllUsers = async (req, res) => {
@@ -16,8 +19,20 @@ const getAllUsers = async (req, res) => {
 const blockUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const user = await authService.getUserById(id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
     await adminService.updateUserStatus(id, false);
-    res.status(200).json({ success: true, message: "User blocked successfully" });
+    await emailService.sendAccountBlockedEmail(user.email, user.full_name);
+
+    res
+      .status(200)
+      .json({ success: true, message: "User blocked and notified" });
   } catch (error) {
     console.error("Block user error:", error);
     res.status(500).json({ success: false, message: "Failed to block user" });
@@ -28,8 +43,20 @@ const blockUser = async (req, res) => {
 const unblockUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const user = await authService.getUserById(id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
     await adminService.updateUserStatus(id, true);
-    res.status(200).json({ success: true, message: "User unblocked successfully" });
+    await emailService.sendAccountUnblockedEmail(user.email, user.full_name);
+
+    res
+      .status(200)
+      .json({ success: true, message: "User unblocked and notified" });
   } catch (error) {
     console.error("Unblock user error:", error);
     res.status(500).json({ success: false, message: "Failed to unblock user" });
