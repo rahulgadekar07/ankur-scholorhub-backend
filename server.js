@@ -12,10 +12,11 @@ app.use(express.json());
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require("./routes/adminRoutes");
+const paymentRoutes = require('./routes/paymentRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use("/api/admin", adminRoutes);
-
+app.use("/api/payment", paymentRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Base URL route
