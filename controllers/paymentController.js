@@ -62,15 +62,25 @@ exports.verifyPayment = async (req, res) => {
       console.log("✅ Payment verified successfully");
 
       // Update DB record
-      await paymentService.updatePaymentStatus(razorpay_order_id, "paid");
+      const order = await paymentService.updatePaymentStatus(razorpay_order_id, "paid");
 
-      res.status(200).json({ success: true, message: "Payment verified successfully" });
+      // Fetch donor info (assuming your saveOrder stores email/name)
+      const { email, name, amount } = order || {};
+
+      // ✅ Send confirmation email
+      const emailService = require("../services/emailService");
+      if (email && name && amount) {
+        await emailService.sendDonationConfirmation(email, name, amount);
+        console.log(`📧 Donation confirmation email sent to ${email}`);
+      }
+
+      return res.status(200).json({ success: true, message: "Payment verified successfully" });
     } else {
       console.log("❌ Invalid signature");
-      res.status(400).json({ success: false, message: "Invalid signature" });
+      return res.status(400).json({ success: false, message: "Invalid signature" });
     }
   } catch (error) {
     console.error("❌ Verification failed:", error);
-    res.status(500).json({ success: false, message: "Payment verification failed" });
+    return res.status(500).json({ success: false, message: "Payment verification failed" });
   }
 };

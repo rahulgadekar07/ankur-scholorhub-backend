@@ -64,3 +64,28 @@ exports.sendAccountUnblockedEmail = async (toEmail, fullName) => {
   `;
   return sendEmail(toEmail, subject, html);
 };
+// ✅ Feedback Acknowledgement Email
+exports.sendFeedbackAcknowledgement = async (toEmail, fullName) => {
+  const subject = "Thanks for contacting Ankur ScholarHub!";
+  const html = `
+    <p>Dear ${fullName},</p>
+    <p>Thank you for reaching out to us. We have received your message and our team will get back to you shortly.</p>
+    <p>Your feedback is valuable to us and helps us serve you better.</p>
+    <br/>
+    <p>Warm regards,<br/><strong>Team Ankur ScholarHub</strong></p>
+  `;
+  return sendEmail(toEmail, subject, html);
+};
+// ✅ Donation Confirmation Email
+exports.sendDonationConfirmation = async (toEmail, donorName, amount) => {
+  const subject = "Thank You for Your Donation to Ankur ScholarHub!";
+  const html = `
+    <p>Dear ${donorName},</p>
+    <p>We sincerely thank you for your generous donation of <strong>₹${amount}</strong>.</p>
+    <p>Your support helps us continue empowering students through scholarships, resources, and learning opportunities.</p>
+    <p>We truly appreciate your kindness and contribution.</p>
+    <br/>
+    <p>Warm regards,<br/><strong>Team Ankur ScholarHub</strong></p>
+  `;
+  return sendEmail(toEmail, subject, html);
+};

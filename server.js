@@ -1,65 +1,40 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
 
 // Routes
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-const paymentRoutes = require('./routes/paymentRoutes');
+const paymentRoutes = require("./routes/paymentRoutes");
+const otherRoutes = require("./routes/otherRoutes");
 
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/api/other", otherRoutes);
 
-// Base URL route
-app.get('/', (req, res) => {
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Base route
+app.get("/", (req, res) => {
   res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>API Status</title>
-      <style>
-        body {
-          background-color: #f4f4f4;
-          font-family: Arial, sans-serif;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-        }
-        .container {
-          text-align: center;
-          background: #fff;
-          padding: 30px 50px;
-          border-radius: 12px;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        h1 { color: #e63946; }
-        p { color: #333; font-size: 1.1rem; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>🚀 API is Running</h1>
-        <p>Welcome to the Ankur ScholarHub API backend.<br>
-        Use <code>/api/auth</code> for authentication routes.</p>
-      </div>
-    </body>
+    <html>
+      <head><title>API Status</title></head>
+      <body style="font-family:Arial;text-align:center;padding:60px;">
+        <h2>🚀 Ankur ScholarHub API is Running</h2>
+        <p>Use <code>/api/auth</code>, <code>/api/admin</code>, <code>/api/payment</code>, or <code>/api/other</code> routes.</p>
+      </body>
     </html>
   `);
 });
 
-
-// Server
+// Start server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
